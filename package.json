@@ -11,7 +11,7 @@
     "start": "node build/bin/www"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
