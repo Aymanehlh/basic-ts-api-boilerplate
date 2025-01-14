@@ -1,10 +1,15 @@
 import {Router} from "express";
+import path from "node:path";
 
 import {Film, NewFilm} from "../types";
 
+import {serialize, parse} from "../utils/json";
+
 const router= Router();
 
-const films : Film[] = [
+const jsonDbPath = path.join(__dirname,"/../data/films.json")
+
+const filmss : Film[] = [
     { id:1, title :"Shang-Chi and the Legend of the ten rings", director: "Destin Daniel Cretton", duration:132 },
     {id : 2, title: "The Matrix", director: "Lana Wachowski", duration: 136}
 
@@ -13,6 +18,8 @@ const films : Film[] = [
 
 //Read all films, filtered by minimum duration if the query param exists
 router.get("/",(req, res)=> {
+    const films = parse(jsonDbPath, filmss);
+
     if (req.query["minimum-duration"] === undefined){
         return res.send(films);
     }
@@ -36,6 +43,8 @@ router.get("/:id",(req,res)=>{
     if (isNaN(id)) {
         return res.sendStatus(400);
     }
+
+    const films = parse (jsonDbPath, filmss);
 
     const film = films.find((film)=> film.id === id);
 
@@ -69,6 +78,8 @@ router.post("/",(req,res)=> {
 
     const newFilm = body as NewFilm;
 
+    const films = parse(jsonDbPath, filmss);
+
     const existingFilm = films.find((film)=>
         film.title.toLowerCase() === newFilm.title.toLowerCase()&&
         film.director.toLowerCase()=== newFilm.director.toLowerCase()
@@ -85,6 +96,8 @@ router.post("/",(req,res)=> {
 
     films.push(addedFilm);
     
+    serialize(jsonDbPath, films)
+    
     return res.json(addedFilm);
 
 
@@ -97,6 +110,8 @@ router.delete("/:id",(req,res)=>{
     if (isNaN(id)){
         return res.sendStatus(400);
     }
+
+    const films = parse(jsonDbPath, filmss);
 
     const index = films.findIndex((film)=> film.id ===id);
     if (index===-1){
@@ -117,6 +132,8 @@ router.patch("/:id",(req,res)=>{
     if(isNaN(id)){
         return res.sendStatus(400);
     }
+
+    const films = parse(jsonDbPath,filmss)
 
     const filmToUpdate = films.find((film)=>film.id===id);
 
@@ -145,6 +162,8 @@ router.patch("/:id",(req,res)=>{
     const updatedFilm = {...filmToUpdate,...body};
 
     films [films.indexOf(filmToUpdate)] = updatedFilm;
+
+    serialize(jsonDbPath, films)
 
     return res.send(updatedFilm);
 });
