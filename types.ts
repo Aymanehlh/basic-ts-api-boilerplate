@@ -10,4 +10,6 @@ interface Film {
 
 }
 
-export type { Film };
+type NewFilm =Omit<Film, "id">;
+
+export type { Film, NewFilm };
