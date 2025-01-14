@@ -27,7 +27,7 @@ router.get("/",(req, res)=> {
 
     return res.send(filteredFilms);
 
-})
+});
 
 //Read a film by id 
 router.get("/:id",(req,res)=>{
@@ -46,7 +46,7 @@ router.get("/:id",(req,res)=>{
     return res.send(film);
 
 
-})
+});
 
 //Create new film
 
@@ -88,7 +88,65 @@ router.post("/",(req,res)=> {
     return res.json(addedFilm);
 
 
-})
+});
 
+//Delete a film by id
+router.delete("/:id",(req,res)=>{
+    const id =Number(req.params.id);
+
+    if (isNaN(id)){
+        return res.sendStatus(400);
+    }
+
+    const index = films.findIndex((film)=> film.id ===id);
+    if (index===-1){
+        return res.sendStatus(404);
+    }
+
+    const deletedFilm = films[index];
+
+    films.splice(index, 1);
+
+    return res.send(deletedFilm);
+});
+
+//Update on or multiple props of a film
+router.patch("/:id",(req,res)=>{
+    const id = Number(req.params.id);
+
+    if(isNaN(id)){
+        return res.sendStatus(400);
+    }
+
+    const filmToUpdate = films.find((film)=>film.id===id);
+
+    if (filmToUpdate === undefined){
+        return res.sendStatus(404);
+    }
+
+    const body : unknown = req.body;
+
+    if (
+        !body ||
+        typeof body !== "object" ||
+        Object.keys(body).length === 0||
+        ("title" in body && 
+            (typeof body.title !=="string" || !body.title.trim())) ||
+        ("director" in body &&
+            (typeof body.director !=="string" || !body.director.trim())) ||
+        ("duration" in body &&  
+            (typeof body.duration !=="number" || body.duration <=0))
+
+    ){
+        return res.sendStatus(400)
+        
+    }
+
+    const updatedFilm = {...filmToUpdate,...body};
+
+    films [films.indexOf(filmToUpdate)] = updatedFilm;
+
+    return res.send(updatedFilm);
+});
 
 export default router;
