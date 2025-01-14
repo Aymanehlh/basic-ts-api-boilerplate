@@ -20,7 +20,7 @@ router.get("/",(req, res)=> {
     const minDuration = Number(req.query["minimum-duration"]);
 
     if(isNaN(minDuration)|| minDuration<=0) {
-        res.json("Wrong minimum duration");
+        return res.sendStatus(400)
     }
 
     const filteredFilms = films.filter((film)=> film.duration >=minDuration);
@@ -34,13 +34,13 @@ router.get("/:id",(req,res)=>{
     const id = Number(req.params.id);
 
     if (isNaN(id)) {
-        return res.json("Wrong id");
+        return res.sendStatus(400);
     }
 
     const film = films.find((film)=> film.id === id);
 
     if (film === undefined) {
-        return res.json ("Resource not found")
+        return res.sendStatus(404);
     }
 
     return res.send(film);
@@ -64,10 +64,20 @@ router.post("/",(req,res)=> {
         !body.director.trim()||
         body.duration <=0  
         ) {
-            return res.json("Wrong body format");
+            return res.sendStatus(400);
     }
 
     const newFilm = body as NewFilm;
+
+    const existingFilm = films.find((film)=>
+        film.title.toLowerCase() === newFilm.title.toLowerCase()&&
+        film.director.toLowerCase()=== newFilm.director.toLowerCase()
+    
+    );
+
+    if(existingFilm){
+        return res.sendStatus(409)
+    }
 
     const nextId = films.reduce((acc, film)=>(film.id > acc ? film.id : acc),0) +1;
 
