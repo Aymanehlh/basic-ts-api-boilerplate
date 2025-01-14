@@ -71,7 +71,7 @@ router.post("/",(req,res)=> {
 
     const nextId = films.reduce((acc, film)=>(film.id > acc ? film.id : acc),0) +1;
 
-    const addedFilm : Film = { id: nextId,...NewFilm};
+    const addedFilm : Film = { id: nextId,...newFilm};
 
     films.push(addedFilm);
     

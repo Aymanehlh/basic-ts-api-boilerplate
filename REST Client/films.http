@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3000
+
+### Read all films
+GET {{baseUrl}}/films
+
+### Read all films with minimum-duration of 140 min
+GET {{baseUrl}}/films/?minimum-duration=136
+
+### Try to read films with wrong minimum-duration
+GET {{baseUrl}}/films/?minimum-duration=0
+
+### Read film with ID == 1
+GET {{baseUrl}}/films/1
+
+### Read film which does not exist
+GET {{baseUrl}}/films/500
+
+### Add film
+POST {{baseUrl}}/films/
+Content-Type: application/json
+
+{
+    "title": "Star Wars",
+    "duration": 138,
+    "director": "George"
+    }
